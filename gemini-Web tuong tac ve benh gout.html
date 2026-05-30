@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hành Trình Tương Tác: Hiểu Sâu Về Bệnh Gout</title>
+    <!-- Tailwind CSS cho giao diện hiện đại -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- FontAwesome cho các icon sinh động -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .crystal {
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            transition: all 0.5s ease;
+        }
+        .pulse-pain {
+            animation: pulse-red 1.5s infinite;
+        }
+        @keyframes pulse-red {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { transform: scale(1.03); box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 font-sans antialiased">
+
+    <!-- Header -->
+    <header class="bg-gradient-to-b from-indigo-950 to-slate-900 py-12 px-4 text-center border-b border-slate-800">
+        <span class="bg-red-500/10 text-red-400 border border-red-500/30 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">Mô phỏng Y khoa Tương tác</span>
+        <h1 class="text-3xl md:text-5xl font-black mt-3 mb-4 bg-gradient-to-r from-red-400 via-amber-400 to-indigo-400 bg-clip-text text-transparent">
+            BÊN TRONG CƠN GOUT CẤP
+        </h1>
+        <p class="text-slate-400 max-w-2xl mx-auto text-sm md:text-base">
+            Khám phá thế giới vi mô bên trong khớp xương, giả lập nồng độ Axit Uric và chứng kiến cuộc chiến của hệ miễn dịch khi cơn Gout cấp bùng phát.
+        </p>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 py-8 space-y-12">
+
+        <!-- BẢNG ĐIỀU KHIỂN GIẢ LẬP MÁU VÀ KHỚP (INTERACTIVE SIMULATOR) -->
+        <section class="bg-slate-800 rounded-2xl p-6 shadow-xl border border-slate-700">
+            <div class="flex flex-col lg:flex-row gap-8">
+                
+                <!-- Bên trái: Bộ điều khiển -->
+                <div class="lg:w-1/3 space-y-6">
+                    <div>
+                        <h2 class="text-xl font-bold text-amber-400 flex items-center gap-2">
+                            <i class="fa-solid fa-sliders"></i> Trạm Giả Lập Cơ Thể
+                        </h2>
+                        <p class="text-xs text-slate-400 mt-1">Thay đổi các chỉ số dưới đây để xem diễn biến sinh học trong mô hình bên phải.</p>
+                    </div>
+
+                    <!-- Thanh trượt Axit Uric -->
+                    <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700">
+                        <label class="block text-sm font-medium mb-2 flex justify-between">
+                            <span>Nồng độ Axit Uric trong máu:</span>
+                            <span id="uric-value" class="text-amber-400 font-bold">4.0 mg/dL</span>
+                        </label>
+                        <input type="range" id="uric-slider" min="3" max="12" step="0.5" value="4" 
+                               class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-amber-400">
+                        <div id="uric-status" class="text-xs mt-2 text-emerald-400 font-medium">Mức độ: An toàn (Bình thường)</div>
+                    </div>
+
+                    <!-- Trạng thái khớp -->
+                    <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700 space-y-3">
+                        <span class="block text-sm font-medium">Kích hoạt trạng thái khớp:</span>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button id="btn-normal" onclick="setJointState('normal')" class="py-2 text-xs font-semibold rounded-lg bg-indigo-600 text-white shadow-md transition-all cursor-pointer">Khớp Bình Thường</button>
+                            <button id="btn-attack" onclick="setJointState('attack')" class="py-2 text-xs font-semibold rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-300 transition-all cursor-pointer">Cơn Gout Cấp!</button>
+                        </div>
+                    </div>
+
+                    <!-- Bản tin Y khoa -->
+                    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 h-44 overflow-y-auto">
+                        <span class="text-xs font-bold uppercase tracking-wider text-slate-500 block mb-2">Nhật ký diễn biến cơ thể:</span>
+                        <div id="sim-log" class="text-xs space-y-1.5 text-slate-300 font-mono">
+                            <p class="text-emerald-400">[00:00] Cơ thể đang ở trạng thái cân bằng. Thận đào thải axit uric tốt.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bên phải: Kính hiển vi trực quan hóa -->
+                <div class="lg:w-2/3 bg-slate-950 rounded-xl border border-slate-800 p-6 flex flex-col items-center justify-center relative min-h-[350px]">
+                    <span class="absolute top-3 left-3 text-xs bg-slate-800 px-2 py-1 rounded text-slate-400 font-mono">Hình ảnh vi mô tại Khớp ngón chân cái</span>
+                    
+                    <!-- Khối mô phỏng ổ khớp -->
+                    <div id="joint-visual" class="w-full max-w-sm aspect-square rounded-full border-4 border-slate-800 flex items-center justify-center relative transition-all duration-500 overflow-hidden bg-radial from-slate-900 to-slate-950">
+                        
+                        <!-- Sụn khớp giả lập -->
+                        <div id="sun-khop" class="absolute inset-4 border-2 border-dashed border-indigo-500/20 rounded-full flex items-center justify-center">
+                            <span class="text-[10px] text-indigo-400/40 font-bold uppercase tracking-widest absolute top-6">Mô Sụn Khớp</span>
+                        </div>
+
+                        <!-- Tế bào bạch cầu (Sẽ xuất hiện khi kích hoạt) -->
+                        <div id="white-cells" class="absolute inset-0 hidden pointer-events-none">
+                            <div class="absolute top-1/4 left-1/4 w-8 h-8 bg-white/80 rounded-full border border-blue-300 shadow-lg animate-bounce flex items-center justify-center text-[10px] text-slate-900 font-bold">Bạch cầu</div>
+                            <div class="absolute bottom-1/3 right-1/4 w-10 h-10 bg-white/80 rounded-full border border-blue-300 shadow-lg animate-ping opacity-75 flex items-center justify-center text-[10px] text-slate-900 font-bold"></div>
+                            <div class="absolute top-1/2 right-1/3 w-7 h-7 bg-white/90 rounded-full border border-blue-300 shadow-lg animate-pulse flex items-center justify-center text-[8px] text-slate-900 font-bold">Bạch cầu</div>
+                        </div>
+
+                        <!-- Vùng chứa các tinh thể Urat -->
+                        <div id="crystal-container" class="absolute inset-0 flex flex-wrap items-center justify-center p-12 gap-2 pointer-events-none">
+                            <!-- Các tinh thể hình kim sẽ sinh ra bằng JS ở đây -->
+                        </div>
+
+                        <div id="center-status-text" class="text-center z-10 p-4">
+                            <p id="visual-label" class="text-emerald-400 font-bold text-lg">Khớp An Toàn</p>
+                            <p id="visual-sub" class="text-xs text-slate-500 max-w-[200px] mx-auto mt-1">Axit uric hòa tan hoàn toàn trong dịch khớp.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- KHU VỰC BẢN ĐỒ KIẾN THỨC TOÀN DIỆN (TAB INTERACTIVE) -->
+        <section class="bg-white text-slate-800 rounded-2xl p-6 md:p-8 shadow-sm">
+            <h2 class="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-2">
+                <i class="fa-solid fa-book-medical text-indigo-600"></i> Cẩm Nang Toàn Diện Về Bệnh Gout
+            </h2>
+
+            <!-- Các nút Tab điều hướng -->
+            <div class="flex flex-wrap gap-2 border-b border-slate-200 pb-4 mb-6">
+                <button onclick="switchTab('nguyen-nhan')" id="tab-nguyen-nhan" class="tab-btn px-4 py-2 text-sm font-semibold rounded-lg bg-indigo-600 text-white cursor-pointer">1. Nguyên Nhân & Cơ Chế</button>
+                <button onclick="switchTab('trieu-chung')" id="tab-trieu-chung" class="tab-btn px-4 py-2 text-sm font-semibold rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 cursor-pointer">2. Triệu Chứng Cấp & Mãn Tính</button>
+                <button onclick="switchTab('dinh-duong')" id="tab-dinh-duong" class="tab-btn px-4 py-2 text-sm font-semibold rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 cursor-pointer">3. Chế Độ Dinh Dưỡng</button>
+                <button onclick="switchTab('dieu-tri')" id="tab-dieu-tri" class="tab-btn px-4 py-2 text-sm font-semibold rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 cursor-pointer">4. Giải Pháp Điều Trị</button>
+            </div>
+
+            <!-- NỘI DUNG CÁC TAB -->
+            <div id="tab-content" class="space-y-6">
+                <!-- Tab Nguyên Nhân (Mặc định) -->
+                <div id="content-nguyen-nhan" class="tab-pane block space-y-4 animate-fade-in">
+                    <h3 class="text-lg font-bold text-indigo-900">Nguồn gốc của Axit Uric và Tinh thể Urat</h3>
+                    <p class="text-slate-600 leading-relaxed text-sm md:text-base">
+                        Bệnh Gout (Thống phong) là một dạng viêm khớp chuyển hóa, sinh ra do sự mất cân bằng giữa lượng <strong>Axit Uric</strong> sản sinh trong cơ thể và khả năng đào thải của thận.
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                        <div class="p-4 bg-amber-50 rounded-xl border border-amber-100">
+                            <span class="font-bold text-amber-800 block mb-1 text-sm"><i class="fa-solid fa-drumstick-bite mr-1"></i> Quá trình nạp vào (Purin):</span>
+                            <span class="text-xs text-slate-600">Khi bạn ăn các thực phẩm giàu nhân Purin (thịt đỏ, hải sản, bia...), gan sẽ chuyển hóa Purin này thành sản phẩm cuối cùng là Axit Uric đổ vào máu.</span>
+                        </div>
+                        <div class="p-4 bg-rose-50 rounded-xl border border-rose-100">
+                            <span class="font-bold text-rose-800 block mb-1 text-sm"><i class="fa-solid fa-filter mr-1"></i> Quá trình đào thải lỗi:</span>
+                            <span class="text-xs text-slate-600">Bình thường thận lọc bớt 75% axit uric ra nước tiểu. Khi thận yếu hoặc lượng uric quá tải, chúng tích tụ lại trong máu, vượt ngưỡng bão hòa (> 6.8 mg/dL) và bắt đầu kết tủa thành tinh thể.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab Triệu Chứng -->
+                <div id="content-trieu-chung" class="tab-pane hidden space-y-4">
+                    <h3 class="text-lg font-bold text-indigo-900">Diễn tiến các giai đoạn của bệnh Gout</h3>
+                    <div class="border-l-2 border-indigo-600 pl-4 space-y-4 text-sm md:text-base">
+                        <div>
+                            <strong class="text-indigo-700 block">Giai đoạn 1: Tăng axit uric máu thầm lặng</strong>
+                            <p class="text-xs text-slate-500">Nồng độ uric trong máu cao nhưng chưa có triệu chứng đau đớn nào xảy ra trong nhiều năm.</p>
+                        </div>
+                        <div>
+                            <strong class="text-red-600 block">Giai đoạn 2: Cơn Gout cấp tính (Kịch phát)</strong>
+                            <p class="text-xs text-slate-500">Thường bùng phát dữ dội vào ban đêm ở khớp ngón chân cái, khớp gối. Khớp sưng to, đỏ rực, nóng rát và đau đến mức "chỉ cần một luồng gió nhẹ qua cũng đau thấu xương". Kéo dài 3-10 ngày rồi tự giảm.</p>
+                        </div>
+                        <div>
+                            <strong class="text-amber-700 block">Giai đoạn 3: Đau khớp khoảng cách (Ổn định giả)</strong>
+                            <p class="text-xs text-slate-500">Các khoảng thời gian hoàn toàn không đau giữa các đợt cấp. Người bệnh dễ chủ quan tưởng đã khỏi bệnh.</p>
+                        </div>
+                        <div>
+                            <strong class="text-slate-800 block">Giai đoạn 4: Gout mãn tính có hạt Tophi</strong>
+                            <p class="text-xs text-slate-500">Các tinh thể muối urat tích tụ thành các cục u cứng (hạt Tophi) dưới da quanh khớp, gây biến dạng khớp, hủy hoại xương và có thể gây suy thận mãn tính.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab Dinh Dưỡng -->
+                <div id="content-dinh-duong" class="tab-pane hidden space-y-4">
+                    <h3 class="text-lg font-bold text-indigo-900">Chiến lược ăn uống cắt đuôi Axit Uric</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-red-50 p-4 rounded-xl border border-red-100">
+                            <span class="font-bold text-red-700 block mb-2 text-sm"><i class="fa-solid fa-ban mr-1"></i> Thực phẩm nên tránh xa (Giàu Purin)</span>
+                            <ul class="text-xs text-slate-600 list-disc pl-4 space-y-1">
+                                <li>Nội tạng động vật (Gan, lòng, tim, cật...).</li>
+                                <li>Thịt đỏ (Thịt bò, thịt dê, thịt chó...).</li>
+                                <li>Hải sản có vỏ (Tôm, cua, sò, ghẹ...).</li>
+                                <li><strong>Bia rượu:</strong> Làm giảm nghiêm trọng khả năng đào thải axit uric của thận.</li>
+                                <li>Nước ngọt chứa đường Fructose cao.</li>
+                            </ul>
+                        </div>
+                        <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-100">
+                            <span class="font-bold text-emerald-700 block mb-2 text-sm"><i class="fa-solid fa-circle-check mr-1"></i> Thực phẩm vàng bảo vệ khớp</span>
+                            <ul class="text-xs text-slate-600 list-disc pl-4 space-y-1">
+                                <li><strong>Nước lọc (2-3 lít/ngày):</strong> Vũ khí tối thượng giúp thận pha loãng và rửa trôi axit uric.</li>
+                                <li>Rau xanh, trái cây giàu Vitamin C (Cam, chanh, anh đào/cherry giúp hạ axit uric).</li>
+                                <li>Sữa tươi, sữa chua ít béo hoặc không béo.</li>
+                                <li>Các loại ngũ cốc, tinh bột nguyên cám.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab Điều Trị -->
+                <div id="content-dieu-tri" class="tab-pane hidden space-y-4">
+                    <h3 class="text-lg font-bold text-indigo-900">Các nguyên tắc vàng trong y khoa điều trị Gout</h3>
+                    <p class="text-slate-600 text-sm leading-relaxed">
+                        Điều trị bệnh Gout luôn chia làm 2 mục tiêu hoàn toàn độc lập mà người bệnh cần nắm rõ:
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                        <div class="p-4 border border-slate-200 rounded-xl bg-slate-50">
+                            <strong class="text-red-700 block font-bold mb-1 text-sm">Xử lý đợt cấp (Cắt cơn đau)</strong>
+                            Dùng các nhóm thuốc kháng viêm cấp tốc như <strong>Colchicine</strong> (hiệu quả nhất trong 24h đầu), thuốc giảm đau kháng viêm không steroid (NSAIDs), hoặc Corticoid. <br><em class="text-slate-400 font-serif">Lưu ý: Không dùng thuốc hạ axit uric trong lúc đang đau cấp vì sẽ làm cơn đau dữ dội hơn.</em>
+                        </div>
+                        <div class="p-4 border border-slate-200 rounded-xl bg-slate-50">
+                            <strong class="text-indigo-700 block font-bold mb-1 text-sm">Điều trị lâu dài (Hạ Axit Uric máu)</strong>
+                            Khi đã hết đau, đích đến là duy trì Axit Uric luôn dưới 6.0 mg/dL (hoặc dưới 5.0 mg/dL nếu đã có hạt tophi) bằng các thuốc ức chế tổng hợp axit uric như <strong>Allopurinol</strong> hoặc <strong>Febuxostat</strong> uống đều đặn mỗi ngày.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-950 text-slate-500 text-center py-6 text-xs border-t border-slate-800 mt-12">
+        <p>© 2026 Ứng dụng tương tác y khoa mô phỏng sinh học bệnh Gout. Thông tin mang tính chất tham khảo học tập.</p>
+    </footer>
+
+    <!-- JAVASCRIPT ĐIỀU KHIỂN TƯƠNG TÁC -->
+    <script>
+        const slider = document.getElementById('uric-slider');
+        const uricValue = document.getElementById('uric-value');
+        const uricStatus = document.getElementById('uric-status');
+        const logContainer = document.getElementById('sim-log');
+        const crystalContainer = document.getElementById('crystal-container');
+        const jointVisual = document.getElementById('joint-visual');
+        const whiteCells = document.getElementById('white-cells');
+        const visualLabel = document.getElementById('visual-label');
+        const visualSub = document.getElementById('visual-sub');
+
+        let currentJointState = 'normal'; // 'normal' hoặc 'attack'
+
+        // Hàm ghi nhật ký mô phỏng
+        function addLog(message, type = 'info') {
+            const time = new Date().toLocaleTimeString('vi-VN', { hour12: false }).split(' ')[0];
+            let colorClass = 'text-slate-400';
+            if (type === 'warning') colorClass = 'text-amber-400';
+            if (type === 'danger') colorClass = 'text-red-400 font-bold';
+            if (type === 'success') colorClass = 'text-emerald-400';
+
+            logContainer.innerHTML += `<p class="${colorClass}">[${time}] ${message}</p>`;
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        // Tạo hiệu ứng tinh thể kết tủa
+        function updateCrystals(level) {
+            crystalContainer.innerHTML = '';
+            // Càng vượt ngưỡng 6.8 mg/dL tinh thể xuất hiện càng nhiều
+            if (level > 6.8) {
+                const count = Math.floor((level - 6.5) * 8);
+                for (let i = 0; i < count; i++) {
+                    const cry = document.createElement('div');
+                    cry.className = 'crystal bg-amber-100 border border-amber-300 shadow-md shadow-amber-200/50';
+                    
+                    // Thiết lập kích thước ngẫu nhiên mảnh/nhọn như cây kim
+                    const width = Math.floor(Math.random() * 4) + 2;
+                    const height = Math.floor(Math.random() * 25) + 15;
+                    cry.style.width = `${width}px`;
+                    cry.style.height = `${height}px`;
+                    
+                    // Xoay hướng ngẫu nhiên tạo độ đâm chọc
+                    const rotate = Math.floor(Math.random() * 360);
+                    cry.style.transform = `rotate(${rotate}deg)`;
+                    
+                    crystalContainer.appendChild(cry);
+                }
+            }
+        }
+
+        // Cập nhật giao diện tổng thể dựa vào slider và nút bấm
+        function renderSimulator() {
+            const val = parseFloat(slider.value);
+            uricValue.innerText = `${val.toFixed(1)} mg/dL`;
+
+            // Xử lý nồng độ Axit Uric
+            if (val <= 6.8) {
+                uricStatus.innerText = "Mức độ: An toàn (Bình thường)";
+                uricStatus.className = "text-xs mt-2 text-emerald-400 font-medium";
+                if (currentJointState !== 'attack') {
+                    visualLabel.innerText = "Khớp An Toàn";
+                    visualLabel.className = "text-emerald-400 font-bold text-lg";
+                    visualSub.innerText = "Axit uric hòa tan hoàn toàn, không có hiện tượng lắng đọng.";
+                    jointVisual.className = "w-full max-w-sm aspect-square rounded-full border-4 border-slate-800 flex items-center justify-center relative transition-all duration-500 overflow-hidden bg-radial from-slate-900 to-slate-950";
+                    whiteCells.classList.add('hidden');
+                }
+            } else if (val > 6.8 && val <= 8.5) {
+                uricStatus.innerText = "Mức độ: Cao (Vượt ngưỡng bão hòa)";
+                uricStatus.className = "text-xs mt-2 text-amber-400 font-medium";
+                if (currentJointState !== 'attack') {
+                    visualLabel.innerText = "Tích Tụ Thầm Lặng";
+                    visualLabel.className = "text-amber-400 font-bold text-lg";
+                    visualSub.innerText = "Các tinh thể muối Urat hình kim siêu nhỏ bắt đầu rơi xuống sụn khớp.";
+                    jointVisual.className = "w-full max-w-sm aspect-square rounded-full border-4 border-amber-600/50 flex items-center justify-center relative transition-all duration-500 overflow-hidden bg-radial from-slate-900 to-slate-950";
+                    whiteCells.classList.add('hidden');
+                }
+            } else {
+                uricStatus.innerText = "Mức độ: Nguy hiểm (Rất cao)";
+                uricStatus.className = "text-xs mt-2 text-rose-500 font-bold animate-pulse";
+                if (currentJointState !== 'attack') {
+                    visualLabel.innerText = "Nguy Cơ Kịch Phát";
+                    visualLabel.className = "text-rose-400 font-bold text-lg";
+                    visualSub.innerText = "Mật độ tinh thể dày đặc. Khớp như bãi chông, chỉ chờ ngòi nổ kích hoạt đợt viêm.";
+                    jointVisual.className = "w-full max-w-sm aspect-square rounded-full border-4 border-rose-600 flex items-center justify-center relative transition-all duration-500 overflow-hidden bg-radial from-slate-900 to-slate-950";
+                    whiteCells.classList.add('hidden');
+                }
+            }
+
+            // Ép trạng thái nếu bật nút "Cơn Gout cấp"
+            if (currentJointState === 'attack') {
+                visualLabel.innerText = "VIÊM CẤP TÍNH DỮ DỘI!";
+                visualLabel.className = "text-white font-black text-xl tracking-wide";
+                visualSub.innerText = "Bạch cầu lao vào nuốt tinh thể hình kim nhưng bị đâm vỡ, giải phóng cytokine gây bỏng rát và đau tột độ.";
+                jointVisual.className = "w-full max-w-sm aspect-square rounded-full border-4 border-red-500 flex items-center justify-center relative overflow-hidden bg-red-950/80 pulse-pain";
+                whiteCells.classList.remove('hidden');
+            }
+
+            updateCrystals(val);
+        }
+
+        // Lắng nghe sự thay đổi thanh trượt
+        slider.addEventListener('input', () => {
+            const val = parseFloat(slider.value);
+            if (val > 6.8) {
+                addLog(`Axit Uric đạt ${val} mg/dL. Vượt ngưỡng bão hòa sinh học 6.8 mg/dL.`, 'warning');
+            } else {
+                addLog(`Axit Uric giảm về ${val} mg/dL. Trạng thái lọc ổn định.`, 'success');
+            }
+            renderSimulator();
+        });
+
+        // Chuyển đổi trạng thái khớp qua nút bấm
+        function setJointState(state) {
+            currentJointState = state;
+            const btnNormal = document.getElementById('btn-normal');
+            const btnAttack = document.getElementById('btn-attack');
+
+            if (state === 'attack') {
+                btnAttack.className = "py-2 text-xs font-semibold rounded-lg bg-red-600 text-white shadow-md shadow-red-500/50 transition-all cursor-pointer";
+                btnNormal.className = "py-2 text-xs font-semibold rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-300 transition-all cursor-pointer";
+                
+                // Tự động đẩy thanh trượt lên cao nếu người dùng đang để thấp để mô phỏng chính xác
+                if (parseFloat(slider.value) <= 6.8) {
+                    slider.value = 9.5;
+                    addLog("Kích hoạt đợt cấp: Axit Uric tự động dâng cao đột ngột!", "warning");
+                }
+                addLog("CƠN GOUT CẤP BÙNG PHÁT! Hệ miễn dịch nhận diện tinh thể Urat là dị vật xâm nhập. Bạch cầu tràn vào ổ khớp gây ra phản ứng viêm hóa hướng động tàn khốc.", "danger");
+            } else {
+                btnNormal.className = "py-2 text-xs font-semibold rounded-lg bg-indigo-600 text-white shadow-md transition-all cursor-pointer";
+                btnAttack.className = "py-2 text-xs font-semibold rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-300 transition-all cursor-pointer";
+                addLog("Cơn viêm hạ nhiệt hoặc dùng Colchicine/NSAIDs ức chế thực bào thành công. Khớp tạm thời êm dịu.", "success");
+            }
+            renderSimulator();
+        }
+
+        // Xử lý chuyển đổi TAB kiến thức
+        function switchTab(tabId) {
+            // Ẩn tất cả nội dung
+            document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.add('hidden'));
+            // Hiện nội dung tab được chọn
+            document.getElementById(`content-${tabId}`).classList.remove('hidden');
+
+            // Đổi style cho các nút bấm tab
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.className = "tab-btn px-4 py-2 text-sm font-semibold rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 cursor-pointer";
+            });
+            document.getElementById(`tab-${tabId}`).className = "tab-btn px-4 py-2 text-sm font-semibold rounded-lg bg-indigo-600 text-white cursor-pointer";
+        }
+
+        // Khởi tạo đồ họa ban đầu
+        renderSimulator();
+    </script>
+</body>
+</html>

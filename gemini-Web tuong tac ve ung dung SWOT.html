@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ứng dụng SWOT Tương Tác trong Công Việc</title>
+    <!-- Tailwind CSS để giao diện đẹp và hiện đại -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- FontAwesome để dùng icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- html2pdf để xuất file PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        .swot-card { transition: all 0.3s ease; }
+        .swot-card:hover { transform: translateY(-2px); }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased">
+
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-10 px-4 shadow-md text-center">
+        <h1 class="text-3xl md:text-4xl font-extrabold mb-2">Công Cụ Tương Tác & Phân Tích SWOT</h1>
+        <p class="text-indigo-100 max-w-2xl mx-auto text-sm md:text-base">
+            Thấu hiểu bản thân, bứt phá sự nghiệp. Hãy khám phá lý thuyết và tự tạo ma trận SWOT cho công việc của bạn ngay dưới đây.
+        </p>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 py-8 space-y-12">
+
+        <!-- LÝ THUYẾT SECTION -->
+        <section class="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-100">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-2 text-indigo-900">
+                <i class="fa-solid fa-graduation-cap text-indigo-600"></i> SWOT là gì?
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <!-- S -->
+                <div class="border-l-4 border-emerald-500 bg-emerald-50/50 p-4 rounded-r-xl">
+                    <div class="flex items-center gap-2 font-bold text-emerald-700 text-lg mb-1">
+                        <span class="bg-emerald-500 text-white w-7 h-7 rounded-full flex items-center justify-center text-sm">S</span>
+                        Strengths (Điểm mạnh)
+                    </div>
+                    <p class="text-sm text-slate-600">Yếu tố nội tại, tích cực nằm trong tầm kiểm soát của bạn (Kỹ năng, kinh nghiệm, mối quan hệ...).</p>
+                </div>
+                <!-- W -->
+                <div class="border-l-4 border-amber-500 bg-amber-50/50 p-4 rounded-r-xl">
+                    <div class="flex items-center gap-2 font-bold text-amber-700 text-lg mb-1">
+                        <span class="bg-amber-500 text-white w-7 h-7 rounded-full flex items-center justify-center text-sm">W</span>
+                        Weaknesses (Điểm yếu)
+                    </div>
+                    <p class="text-sm text-slate-600">Yếu tố nội tại tiêu cực cần cải thiện (Thiếu kiên nhẫn, kỹ năng ngoại ngữ kém, quản lý thời gian tệ...).</p>
+                </div>
+                <!-- O -->
+                <div class="border-l-4 border-blue-500 bg-blue-50/50 p-4 rounded-r-xl">
+                    <div class="flex items-center gap-2 font-bold text-blue-700 text-lg mb-1">
+                        <span class="bg-blue-500 text-white w-7 h-7 rounded-full flex items-center justify-center text-sm">O</span>
+                        Opportunities (Cơ hội)
+                    </div>
+                    <p class="text-sm text-slate-600">Yếu tố bên ngoài mang tính tích cực từ thị trường, công ty (Xu hướng công nghệ mới, dự án mới mở rộng...).</p>
+                </div>
+                <!-- T -->
+                <div class="border-l-4 border-rose-500 bg-rose-50/50 p-4 rounded-r-xl">
+                    <div class="flex items-center gap-2 font-bold text-rose-700 text-lg mb-1">
+                        <span class="bg-rose-500 text-white w-7 h-7 rounded-full flex items-center justify-center text-sm">T</span>
+                        Threats (Thách thức)
+                    </div>
+                    <p class="text-sm text-slate-600">Yếu tố bên ngoài tiêu cực có thể gây rủi ro (Sự cạnh tranh từ đồng nghiệp, thay đổi nhân sự cấp cao...).</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- THỰC HÀNH SECTION -->
+        <section class="space-y-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-900">Xây Dựng Ma Trận SWOT Của Bạn</h2>
+                    <p class="text-slate-500 text-sm">Nhập thông tin của bạn vào các ô dưới đây. Gợi ý câu hỏi sẽ giúp bạn suy nghĩ.</p>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="clearAll()" class="px-4 py-2 border border-slate-300 rounded-lg text-slate-600 hover:bg-slate-100 text-sm font-medium transition cursor-pointer">
+                        <i class="fa-solid fa-trash-can mr-1"></i> Xóa hết
+                    </button>
+                    <button onclick="exportPDF()" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 text-sm font-medium transition shadow-sm cursor-pointer">
+                        <i class="fa-solid fa-file-pdf mr-1"></i> Xuất File PDF
+                    </button>
+                </div>
+            </div>
+
+            <!-- MA TRẬN 4 Ô -->
+            <div id="swot-matrix" class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-200 p-4 rounded-2xl">
+                
+                <!-- STRENGTHS -->
+                <div class="swot-card bg-white p-5 rounded-xl border border-emerald-100 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-emerald-700 font-bold text-lg flex items-center gap-2">
+                                <i class="fa-solid fa-circle-plus text-emerald-500"></i> S - ĐIỂM MẠNH (Nội tại)
+                            </span>
+                            <span class="text-xs bg-emerald-50 text-emerald-700 px-2 py-1 rounded font-medium">Gợi ý câu hỏi</span>
+                        </div>
+                        <ul class="text-xs text-slate-500 list-disc pl-4 mb-4 space-y-1">
+                            <li>Bạn giỏi việc gì nhất? Bạn có bằng cấp/chứng chỉ gì đặc biệt?</li>
+                            <li>Đồng nghiệp thường khen ngợi bạn ở điểm nào?</li>
+                            <li>Dự án thành công gần nhất của bạn nhờ vào kỹ năng gì?</li>
+                        </ul>
+                    </div>
+                    <textarea id="strengths" rows="5" class="w-full p-3 border border-slate-200 rounded-lg bg-slate-50 focus:bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-none transition placeholder:text-slate-400 text-sm" placeholder="Ví dụ: &#10;- Kỹ năng giải quyết vấn đề tốt dưới áp lực cao.&#10;- Thành thạo công cụ phân tích dữ liệu (Python, SQL).&#10;- Giao tiếp và truyền đạt tốt trong nhóm."></textarea>
+                </div>
+
+                <!-- WEAKNESSES -->
+                <div class="swot-card bg-white p-5 rounded-xl border border-amber-100 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-amber-700 font-bold text-lg flex items-center gap-2">
+                                <i class="fa-solid fa-circle-minus text-amber-500"></i> W - ĐIỂM YẾU (Nội tại)
+                            </span>
+                            <span class="text-xs bg-amber-50 text-amber-700 px-2 py-1 rounded font-medium">Gợi ý câu hỏi</span>
+                        </div>
+                        <ul class="text-xs text-slate-500 list-disc pl-4 mb-4 space-y-1">
+                            <li>Kỹ năng chuyên môn nào bạn còn thiếu hoặc yếu?</li>
+                            <li>Thói quen xấu nào đang cản trở công việc của bạn?</li>
+                            <li>Bạn thường gặp khó khăn ở khâu nào trong quy trình làm việc?</li>
+                        </ul>
+                    </div>
+                    <textarea id="weaknesses" rows="5" class="w-full p-3 border border-slate-200 rounded-lg bg-slate-50 focus:bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none transition placeholder:text-slate-400 text-sm" placeholder="Ví dụ: &#10;- Kỹ năng tiếng Anh giao tiếp còn hạn chế.&#10;- Hay bị ôm đồm công việc, chưa biết ủy quyền.&#10;- Dễ mất tập trung khi làm việc từ xa."></textarea>
+                </div>
+
+                <!-- OPPORTUNITIES -->
+                <div class="swot-card bg-white p-5 rounded-xl border border-blue-100 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-blue-700 font-bold text-lg flex items-center gap-2">
+                                <i class="fa-solid fa-chart-line text-blue-500"></i> O - CƠ HỘI (Bên ngoài)
+                            </span>
+                            <span class="text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded font-medium">Gợi ý câu hỏi</span>
+                        </div>
+                        <ul class="text-xs text-slate-500 list-disc pl-4 mb-4 space-y-1">
+                            <li>Công ty đang mở rộng mảng nào mà bạn có thể tham gia?</li>
+                            <li>Có công nghệ mới nào hỗ trợ tự động hóa công việc của bạn không?</li>
+                            <li>Thị trường đang khát nhân sự có kỹ năng nào mà bạn sẵn sàng học?</li>
+                        </ul>
+                    </div>
+                    <textarea id="opportunities" rows="5" class="w-full p-3 border border-slate-200 rounded-lg bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none transition placeholder:text-slate-400 text-sm" placeholder="Ví dụ: &#10;- Công ty đang đẩy mạnh chuyển đổi số bằng AI.&#10;- Có ngân sách cho nhân viên đi học chứng chỉ quốc tế.&#10;- Sếp trực tiếp sắp thuyên chuyển, có vị trí trống mở ra."></textarea>
+                </div>
+
+                <!-- THREATS -->
+                <div class="swot-card bg-white p-5 rounded-xl border border-rose-100 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-rose-700 font-bold text-lg flex items-center gap-2">
+                                <i class="fa-solid fa-triangle-exclamation text-rose-500"></i> T - THÁCH THỨC (Bên ngoài)
+                            </span>
+                            <span class="text-xs bg-rose-50 text-rose-700 px-2 py-1 rounded font-medium">Gợi ý câu hỏi</span>
+                        </div>
+                        <ul class="text-xs text-slate-500 list-disc pl-4 mb-4 space-y-1">
+                            <li>Ai hoặc điều gì đang cạnh tranh trực tiếp với bạn?</li>
+                            <li>Yêu cầu công việc của bạn có đang thay đổi quá nhanh không?</li>
+                            <li>Sự thay đổi về nhân sự/kinh tế có ảnh hưởng đến sự ổn định của bạn?</li>
+                        </ul>
+                    </div>
+                    <textarea id="threats" rows="5" class="w-full p-3 border border-slate-200 rounded-lg bg-slate-50 focus:bg-white focus:ring-2 focus:ring-rose-500 focus:outline-none transition placeholder:text-slate-400 text-sm" placeholder="Ví dụ: &#10;- Đồng nghiệp mới có chuyên môn công nghệ rất mạnh.&#10;- Ngành nghề có nguy cơ bị cắt giảm nhân sự do suy thoái.&#10;- Công việc lặp đi lặp lại dễ bị thay thế bởi phần mềm."></textarea>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- KẾT HỢP HÀNH ĐỘNG SECTION -->
+        <section class="bg-indigo-900 text-white p-6 md:p-8 rounded-2xl shadow-lg">
+            <h2 class="text-2xl font-bold mb-3 flex items-center gap-2">
+                <i class="fa-solid fa-bolt text-amber-400"></i> Bước Tiếp Theo: Biến SWOT Thành Hành Động
+            </h2>
+            <p class="text-indigo-200 text-sm md:text-base mb-6">
+                Điền ma trận chỉ là bước đầu. Hãy kết hợp chúng lại để tạo ra chiến lược hành động thực tế.
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-slate-800">
+                <div class="bg-white p-4 rounded-xl shadow-sm">
+                    <h3 class="font-bold text-indigo-950 mb-1 flex items-center gap-2 text-sm md:text-base">
+                        <span class="bg-emerald-500 text-white text-xs px-1.5 py-0.5 rounded">S</span> + <span class="bg-blue-500 text-white text-xs px-1.5 py-0.5 rounded">O</span> Chiến lược Tấn công
+                    </h3>
+                    <p class="text-xs text-slate-500 mb-2">Dùng điểm mạnh để nắm bắt cơ hội tốt nhất.</p>
+                    <textarea id="so-strategy" rows="3" class="w-full p-2 border border-slate-200 rounded bg-slate-50 text-sm focus:outline-indigo-600" placeholder="Ví dụ: Dùng thế mạnh phân tích dữ liệu (S) để đăng ký tham gia dự án AI mới của công ty (O)."></textarea>
+                </div>
+
+                <div class="bg-white p-4 rounded-xl shadow-sm">
+                    <h3 class="font-bold text-indigo-950 mb-1 flex items-center gap-2 text-sm md:text-base">
+                        <span class="bg-amber-500 text-white text-xs px-1.5 py-0.5 rounded">W</span> + <span class="bg-blue-500 text-white text-xs px-1.5 py-0.5 rounded">O</span> Chiến lược Cải thiện
+                    </h3>
+                    <p class="text-xs text-slate-500 mb-2">Khắc phục điểm yếu nhờ tận dụng cơ hội từ bên ngoài.</p>
+                    <textarea id="wo-strategy" rows="3" class="w-full p-2 border border-slate-200 rounded bg-slate-50 text-sm focus:outline-indigo-600" placeholder="Ví dụ: Tận dụng ngân sách học tập của công ty (O) để đăng ký một khóa học tiếng Anh giao tiếp cấp tốc (W)."></textarea>
+                </div>
+
+                <div class="bg-white p-4 rounded-xl shadow-sm">
+                    <h3 class="font-bold text-indigo-950 mb-1 flex items-center gap-2 text-sm md:text-base">
+                        <span class="bg-emerald-500 text-white text-xs px-1.5 py-0.5 rounded">S</span> + <span class="bg-rose-500 text-white text-xs px-1.5 py-0.5 rounded">T</span> Chiến lược Phòng thủ
+                    </h3>
+                    <p class="text-xs text-slate-500 mb-2">Sử dụng điểm mạnh để giảm thiểu tác động từ thách thức.</p>
+                    <textarea id="st-strategy" rows="3" class="w-full p-2 border border-slate-200 rounded bg-slate-50 text-sm focus:outline-indigo-600" placeholder="Ví dụ: Phát huy kỹ năng giao tiếp tốt (S) để xây dựng mối quan hệ bền chặt với các sếp mới (T)."></textarea>
+                </div>
+
+                <div class="bg-white p-4 rounded-xl shadow-sm">
+                    <h3 class="font-bold text-indigo-950 mb-1 flex items-center gap-2 text-sm md:text-base">
+                        <span class="bg-amber-500 text-white text-xs px-1.5 py-0.5 rounded">W</span> + <span class="bg-rose-500 text-white text-xs px-1.5 py-0.5 rounded">T</span> Chiến lược Sống sót
+                    </h3>
+                    <p class="text-xs text-slate-500 mb-2">Hạn chế tối đa điểm yếu để né tránh rủi ro trực diện.</p>
+                    <textarea id="wt-strategy" rows="3" class="w-full p-2 border border-slate-200 rounded bg-slate-50 text-sm focus:outline-indigo-600" placeholder="Ví dụ: Tập trung sửa thói quen hay trì hoãn (W) để không bị lọt vào danh sách cắt giảm nhân sự của công ty (T)."></textarea>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 text-center py-6 text-sm border-t border-slate-800 mt-12">
+        <p>© 2026 Trang Web Tương Tác SWOT. Tiện ích hỗ trợ phát triển sự nghiệp cá nhân.</p>
+    </footer>
+
+    <!-- JAVASCRIPT XỬ LÝ DỮ LIỆU -->
+    <script>
+        // Tự động lưu dữ liệu vào LocalStorage để khi load lại trang không bị mất bài
+        const fields = ['strengths', 'weaknesses', 'opportunities', 'threats', 'so-strategy', 'wo-strategy', 'st-strategy', 'wt-strategy'];
+        
+        fields.forEach(id => {
+            const element = document.getElementById(id);
+            // Load dữ liệu cũ nếu có
+            if (localStorage.getItem(id)) {
+                element.value = localStorage.getItem(id);
+            }
+            // Lắng nghe sự kiện gõ phím để lưu liên tục
+            element.addEventListener('input', () => {
+                localStorage.setItem(id, element.value);
+            });
+        });
+
+        // Hàm xóa toàn bộ dữ liệu
+        function clearAll() {
+            if (confirm("Bạn có chắc chắn muốn xóa toàn bộ nội dung đã nhập không?")) {
+                fields.forEach(id => {
+                    document.getElementById(id).value = '';
+                    localStorage.removeItem(id);
+                });
+            }
+        }
+
+        // Hàm xuất file PDF đẹp mắt từ nội dung người dùng nhập
+        function exportPDF() {
+            // Tạo một layout tạm thời được format chỉn chu để xuất PDF
+            const element = document.createElement('div');
+            element.className = 'p-10 font-sans';
+            element.innerHTML = `
+                <h1 style="font-size: 24px; font-weight: bold; color: #1e1b4b; margin-bottom: 5px; text-align: center;">BẢN PHÂN TÍCH MA TRẬN SWOT CÁ NHÂN</h1>
+                <p style="font-size: 12px; color: #64748b; text-align: center; margin-bottom: 25px;">Ngày xuất bản: ${new Date().toLocaleDateString('vi-VN')}</p>
+                
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
+                    <tr>
+                        <td style="width: 50%; border: 2px solid #cbd5e1; padding: 15px; vertical-align: top; background: #f0fdf4;">
+                            <strong style="color: #166534; font-size: 16px;">S - ĐIỂM MẠNH (Strengths)</strong>
+                            <p style="white-space: pre-wrap; font-size: 14px; margin-top: 8px; color: #334155;">${document.getElementById('strengths').value || 'Chưa nhập.'}</p>
+                        </td>
+                        <td style="width: 50%; border: 2px solid #cbd5e1; padding: 15px; vertical-align: top; background: #fffbeb;">
+                            <strong style="color: #92400e; font-size: 16px;">W - ĐIỂM YẾU (Weaknesses)</strong>
+                            <p style="white-space: pre-wrap; font-size: 14px; margin-top: 8px; color: #334155;">${document.getElementById('weaknesses').value || 'Chưa nhập.'}</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width: 50%; border: 2px solid #cbd5e1; padding: 15px; vertical-align: top; background: #eff6ff;">
+                            <strong style="color: #1e40af; font-size: 16px;">O - CƠ HỘI (Opportunities)</strong>
+                            <p style="white-space: pre-wrap; font-size: 14px; margin-top: 8px; color: #334155;">${document.getElementById('opportunities').value || 'Chưa nhập.'}</p>
+                        </td>
+                        <td style="width: 50%; border: 2px solid #cbd5e1; padding: 15px; vertical-align: top; background: #fff1f2;">
+                            <strong style="color: #9f1239; font-size: 16px;">T - THÁCH THỨC (Threats)</strong>
+                            <p style="white-space: pre-wrap; font-size: 14px; margin-top: 8px; color: #334155;">${document.getElementById('threats').value || 'Chưa nhập.'}</p>
+                        </td>
+                    </tr>
+                </table>
+
+                <h2 style="font-size: 18px; font-weight: bold; color: #1e1b4b; margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px;">CHIẾN LƯỢC HÀNH ĐỘNG</h2>
+                <div style="margin-bottom: 12px;"><strong>Chiến lược SO (Tấn công):</strong> <span style="font-size: 14px; color: #334155;">${document.getElementById('so-strategy').value || 'Chưa điền.'}</span></div>
+                <div style="margin-bottom: 12px;"><strong>Chiến lược WO (Cải thiện):</strong> <span style="font-size: 14px; color: #334155;">${document.getElementById('wo-strategy').value || 'Chưa điền.'}</span></div>
+                <div style="margin-bottom: 12px;"><strong>Chiến lược ST (Phòng thủ):</strong> <span style="font-size: 14px; color: #334155;">${document.getElementById('st-strategy').value || 'Chưa điền.'}</span></div>
+                <div style="margin-bottom: 12px;"><strong>Chiến lược WT (Sống sót):</strong> <span style="font-size: 14px; color: #334155;">${document.getElementById('wt-strategy').value || 'Chưa điền.'}</span></div>
+            `;
+
+            // Thiết lập tùy chọn xuất PDF
+            const opt = {
+                margin:       10,
+                filename:     'Ma-tran-SWOT-Ca-Nhan.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            // Tiến hành tạo và tải file về
+            html2pdf().set(opt).from(element).save();
+        }
+    </script>
+</body>
+</html>
