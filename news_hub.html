@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>News Hub</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, sans-serif; background: #f5f5f0; color: #1a1a1a; min-height: 100vh; }
+  .header { background: #fff; border-bottom: 1px solid #e0e0e0; padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+  .header h1 { font-size: 18px; font-weight: 600; }
+  .btn { padding: 7px 14px; border-radius: 8px; border: 1px solid #d0d0d0; background: #fff; cursor: pointer; font-size: 13px; color: #333; transition: background 0.15s; white-space: nowrap; }
+  .btn:hover { background: #f0f0f0; }
+  .btn-primary { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+  .btn-primary:hover { background: #333; }
+  .layout { display: flex; min-height: calc(100vh - 53px); }
+  .sidebar { width: 240px; min-width: 240px; background: #fff; border-right: 1px solid #e0e0e0; padding: 16px; overflow-y: auto; }
+  .sidebar h2 { font-size: 11px; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+  .source-item { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 8px; cursor: pointer; transition: background 0.12s; margin-bottom: 2px; }
+  .source-item:hover { background: #f5f5f0; }
+  .source-item.active { background: #f0f0f8; }
+  .source-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .source-name { font-size: 13px; color: #333; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .source-count { font-size: 11px; color: #aaa; }
+  .remove-btn { font-size: 13px; color: #ccc; cursor: pointer; display: none; padding: 0 2px; }
+  .source-item:hover .remove-btn { display: block; }
+  .remove-btn:hover { color: #e55; }
+  .add-source-form { margin-top: 16px; border-top: 1px solid #eee; padding-top: 14px; }
+  .add-source-form input { width: 100%; padding: 7px 10px; border: 1px solid #d0d0d0; border-radius: 8px; font-size: 12px; margin-bottom: 6px; outline: none; }
+  .add-source-form input:focus { border-color: #888; }
+  .main { flex: 1; padding: 20px; overflow-y: auto; }
+  .feed-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .feed-title { font-size: 16px; font-weight: 600; }
+  .feed-meta { font-size: 12px; color: #999; }
+  .articles-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
+  .article-card { background: #fff; border: 1px solid #e8e8e8; border-radius: 10px; padding: 14px 16px; cursor: pointer; transition: box-shadow 0.15s, border-color 0.15s; display: flex; flex-direction: column; gap: 7px; }
+  .article-card:hover { border-color: #bbb; box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
+  .article-source { display: flex; align-items: center; gap: 6px; }
+  .article-source-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .article-source-name { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; }
+  .article-title { font-size: 14px; font-weight: 500; line-height: 1.5; color: #1a1a1a; }
+  .article-desc { font-size: 12px; color: #666; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .article-time { font-size: 11px; color: #aaa; }
+  .status { text-align: center; padding: 50px 20px; color: #aaa; font-size: 14px; }
+  .error-box { background: #fff8f0; border: 1px solid #fcd49a; border-radius: 8px; padding: 12px 16px; font-size: 12px; color: #92400e; margin-bottom: 14px; line-height: 1.6; }
+  .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid #ddd; border-top-color: #555; border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 6px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>📰 My News Hub</h1>
+  <div style="display:flex;gap:8px;align-items:center;">
+    <span id="last-updated" style="font-size:12px;color:#aaa;"></span>
+    <button class="btn" onclick="refreshAll()" id="refresh-btn">↻ Refresh</button>
+  </div>
+</div>
+
+<div class="layout">
+  <div class="sidebar">
+    <h2>Sources</h2>
+    <div id="source-list"></div>
+    <div class="add-source-form">
+      <h2 style="margin-bottom:8px;">Add source</h2>
+      <input type="text" id="new-name" placeholder="Name (e.g. Dân Trí)" />
+      <input type="text" id="new-rss" placeholder="RSS URL" />
+      <button class="btn btn-primary" style="width:100%;margin-top:4px;" onclick="addSource()">+ Add</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="feed-header">
+      <span class="feed-title" id="feed-title">All Sources</span>
+      <span class="feed-meta" id="feed-meta"></span>
+    </div>
+    <div id="error-container"></div>
+    <div id="articles-container"><div class="status">Click <b>Refresh</b> to load news.</div></div>
+  </div>
+</div>
+
+<script>
+const COLORS = ['#6366f1','#0ea5e9','#10b981','#f59e0b','#ef4444','#8b5cf6','#ec4899','#14b8a6'];
+
+// Multiple CORS proxies to try in order
+const PROXIES = [
+  url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+  url => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
+  url => `https://thingproxy.freeboard.io/fetch/${url}`,
+];
+
+let sources = [
+  { id:1, name:'VnExpress', url:'https://vnexpress.net/rss/tin-moi-nhat.rss', color:COLORS[0] },
+  { id:2, name:'Thể Thao 247', url:'https://thethao247.vn/rss/home.rss', color:COLORS[1] },
+  { id:3, name:'Tuổi Trẻ', url:'https://tuoitre.vn/rss/tin-moi-nhat.rss', color:COLORS[2] },
+];
+let nextId = 4;
+let allArticles = [];
+let activeFilter = 'all';
+let isLoading = false;
+
+function parseRSS(xmlText, sourceId) {
+  const parser = new DOMParser();
+  const xml = parser.parseFromString(xmlText, 'text/xml');
+  const items = xml.querySelectorAll('item');
+  const articles = [];
+  items.forEach(item => {
+    const title = item.querySelector('title')?.textContent?.trim() || '';
+    let link = item.querySelector('link')?.textContent?.trim();
+    if (!link) link = item.querySelector('link')?.nextSibling?.textContent?.trim() || '';
+    const rawDesc = item.querySelector('description')?.textContent || '';
+    const desc = rawDesc.replace(/<[^>]+>/g,'').trim().substring(0, 130);
+    const pubDate = item.querySelector('pubDate')?.textContent?.trim() || '';
+    const dateObj = pubDate ? new Date(pubDate) : new Date(0);
+    const time = isNaN(dateObj) ? '' : dateObj.toLocaleString('vi-VN',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+    if (title && link) articles.push({ title, link, desc, time, sourceId, pubDate: dateObj });
+  });
+  return articles;
+}
+
+async function fetchWithProxy(url) {
+  for (let i = 0; i < PROXIES.length; i++) {
+    try {
+      const proxyUrl = PROXIES[i](url);
+      const res = await fetch(proxyUrl, { signal: AbortSignal.timeout(8000) });
+      if (!res.ok) continue;
+      const text = await res.text();
+      if (text.includes('<item>') || text.includes('<entry>')) return text;
+    } catch(e) { /* try next */ }
+  }
+  throw new Error('All proxies failed');
+}
+
+async function fetchSource(source) {
+  const text = await fetchWithProxy(source.url);
+  return parseRSS(text, source.id);
+}
+
+function renderSidebar() {
+  const list = document.getElementById('source-list');
+  let html = `<div class="source-item ${activeFilter==='all'?'active':''}" onclick="setFilter('all')">
+    <div class="source-dot" style="background:#888"></div>
+    <span class="source-name">All sources</span>
+    <span class="source-count">${allArticles.length}</span>
+  </div>`;
+  sources.forEach(s => {
+    const cnt = allArticles.filter(a=>a.sourceId===s.id).length;
+    html += `<div class="source-item ${activeFilter===s.id?'active':''}" onclick="setFilter(${s.id})">
+      <div class="source-dot" style="background:${s.color}"></div>
+      <span class="source-name">${s.name}</span>
+      <span class="source-count">${cnt}</span>
+      <span class="remove-btn" onclick="event.stopPropagation();removeSource(${s.id})">✕</span>
+    </div>`;
+  });
+  list.innerHTML = html;
+}
+
+function renderArticles() {
+  const filtered = activeFilter==='all' ? allArticles : allArticles.filter(a=>a.sourceId===activeFilter);
+  document.getElementById('feed-meta').textContent = `${filtered.length} articles`;
+  const container = document.getElementById('articles-container');
+  if (!filtered.length) { container.innerHTML = '<div class="status">No articles loaded.</div>'; return; }
+  container.innerHTML = `<div class="articles-grid">${filtered.map(a => {
+    const src = sources.find(s=>s.id===a.sourceId);
+    const color = src?.color||'#888';
+    return `<div class="article-card" onclick="window.open('${a.link.replace(/'/g,"\\'")}','_blank')">
+      <div class="article-source">
+        <div class="article-source-dot" style="background:${color}"></div>
+        <span class="article-source-name" style="color:${color}">${src?.name||''}</span>
+      </div>
+      <div class="article-title">${a.title}</div>
+      ${a.desc?`<div class="article-desc">${a.desc}</div>`:''}
+      <div class="article-time">${a.time}</div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+function setFilter(id) {
+  activeFilter = id;
+  renderSidebar();
+  renderArticles();
+  document.getElementById('feed-title').textContent = id==='all' ? 'All Sources' : sources.find(s=>s.id===id)?.name||'';
+}
+
+async function refreshAll() {
+  if (isLoading) return;
+  isLoading = true;
+  const btn = document.getElementById('refresh-btn');
+  btn.innerHTML = '<span class="spinner"></span>Loading…';
+  btn.disabled = true;
+  document.getElementById('articles-container').innerHTML = '<div class="status"><span class="spinner"></span>Fetching news from all sources…</div>';
+  document.getElementById('error-container').innerHTML = '';
+
+  const results = await Promise.allSettled(sources.map(fetchSource));
+  allArticles = [];
+  const errors = [];
+  results.forEach((r,i) => {
+    if (r.status==='fulfilled') allArticles.push(...r.value);
+    else errors.push(`<b>${sources[i].name}</b>: ${r.reason?.message||'failed'}`);
+  });
+  allArticles.sort((a,b) => b.pubDate - a.pubDate);
+
+  if (errors.length) {
+    document.getElementById('error-container').innerHTML = `<div class="error-box">⚠️ Could not load some sources:<br>${errors.join('<br>')}</div>`;
+  }
+  document.getElementById('last-updated').textContent = 'Updated ' + new Date().toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'});
+  btn.innerHTML = '↻ Refresh';
+  btn.disabled = false;
+  isLoading = false;
+  renderSidebar();
+  renderArticles();
+}
+
+function addSource() {
+  const name = document.getElementById('new-name').value.trim();
+  const url = document.getElementById('new-rss').value.trim();
+  if (!name || !url) { alert('Please enter both a name and RSS URL.'); return; }
+  const color = COLORS[nextId % COLORS.length];
+  sources.push({ id: nextId++, name, url, color });
+  document.getElementById('new-name').value = '';
+  document.getElementById('new-rss').value = '';
+  renderSidebar();
+  refreshAll();
+}
+
+function removeSource(id) {
+  sources = sources.filter(s=>s.id!==id);
+  allArticles = allArticles.filter(a=>a.sourceId!==id);
+  if (activeFilter===id) activeFilter='all';
+  renderSidebar();
+  renderArticles();
+}
+
+renderSidebar();
+</script>
+</body>
+</html>
