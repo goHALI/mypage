@@ -239,6 +239,27 @@
                 "contact-phone": "Phone"
             }
         };
+        let currentLang = 'en';
+
+        function updateLanguageDOM() {
+            const elements = document.querySelectorAll('[data-i18n]');
+            elements.forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (i18nData[currentLang][key]) {
+                    el.innerHTML = i18nData[currentLang][key];
+                }
+            });
+            // Cập nhật text hiển thị trên nút bấm ngữ cảnh tiếp theo
+            document.getElementById('lang-btn').innerText = currentLang === 'vi' ? 'EN' : 'VI';
+        }
+
+        function toggleLang() {
+            currentLang = currentLang === 'vi' ? 'en' : 'vi';
+            updateLanguageDOM();
+        }
+        
+        // Chạy khởi tạo ngôn ngữ mặc định (Tiếng Việt)
+        updateLanguageDOM();
     </script>
 </body>
 </html>
